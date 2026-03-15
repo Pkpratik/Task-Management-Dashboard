@@ -1,4 +1,5 @@
-import { Modal as RBModal } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -14,38 +15,45 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
 }) => {
+  // Lock body scroll
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
   return (
-    <RBModal
-      show={isOpen}
-      onHide={onClose}
-      centered
-      size="lg"
-      contentClassName="premium-modal-content"
-      backdropClassName="premium-modal-backdrop"
-      animation={true}
-    >
-      <div className="relative w-full h-full flex flex-col">
-        {/* Bulletproof Close Button - Top Right */}
-        <button 
-          onClick={onClose}
-          className="absolute top-8 right-8 w-14 h-14 rounded-full bg-white text-black shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[1100] border-4 border-[var(--bg-secondary)]"
-          aria-label="Close modal"
-        >
-          <X className="w-8 h-8" />
-        </button>
+    <AnimatePresence>
+      {isOpen && (
+        <div className="modal-overlay-premium" onClick={onClose}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="modal-vessel-premium"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-premium">
+              {title ? (
+                <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
+                  {title}
+                </h2>
+              ) : <div />}
+              <button onClick={onClose} className="btn-close-premium">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-        {title && (
-          <div className="px-10 pt-12 pb-6 shrink-0">
-            <h2 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter leading-none">
-              {title}
-            </h2>
-          </div>
-        )}
-
-        <div className="px-10 pb-10 relative overflow-y-auto max-h-[85vh] scrollbar-hide">
-          {children}
+            <div className="modal-body-premium scrollbar-hide">
+              {children}
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </RBModal>
+      )}
+    </AnimatePresence>
   );
 };

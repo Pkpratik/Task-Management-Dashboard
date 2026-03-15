@@ -4,9 +4,6 @@ import {
   Plus,
   Moon,
   Sun,
-  Search,
-  List,
-  LayoutGrid,
   Clock,
   CheckCircle2,
   Activity,
@@ -332,7 +329,7 @@ export const Dashboard: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingTask(undefined); }}
-        title=""
+        title={editingTask ? 'Edit Task' : 'Create New Task'}
       >
         <TaskForm
           initialData={editingTask}
@@ -344,7 +341,7 @@ export const Dashboard: React.FC = () => {
       <Modal
         isOpen={deleteId !== null}
         onClose={() => setDeleteId(null)}
-        title=""
+        title="Delete Confirmation"
       >
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-10">
